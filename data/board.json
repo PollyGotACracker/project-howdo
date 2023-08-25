@@ -1,0 +1,94 @@
+{
+  "board": [
+    {
+      "b_code": "B11",
+      "b_eng": "notice",
+      "b_kor": "공지",
+      "b_level": 9,
+      "b_group_code": "B1",
+      "b_group_eng": "general",
+      "b_group_kor": "일반"
+    },
+    {
+      "b_code": "B12",
+      "b_eng": "free",
+      "b_kor": "자유게시판",
+      "b_level": 1,
+      "b_group_code": "B1",
+      "b_group_eng": "general",
+      "b_group_kor": "일반"
+    },
+    {
+      "b_code": "B21",
+      "b_eng": "animals",
+      "b_kor": "동물",
+      "b_level": 1,
+      "b_group_code": "B2",
+      "b_group_eng": "hobbies",
+      "b_group_kor": "취미"
+    },
+    {
+      "b_code": "B22",
+      "b_eng": "plants",
+      "b_kor": "식물",
+      "b_level": 1,
+      "b_group_code": "B2",
+      "b_group_eng": "hobbies",
+      "b_group_kor": "취미"
+    },
+    {
+      "b_code": "B31",
+      "b_eng": "programming",
+      "b_kor": "프로그래밍",
+      "b_level": 1,
+      "b_group_code": "B3",
+      "b_group_eng": "learning",
+      "b_group_kor": "학습"
+    },
+    {
+      "b_code": "B32",
+      "b_eng": "design",
+      "b_kor": "디자인",
+      "b_level": 1,
+      "b_group_code": "B3",
+      "b_group_eng": "learning",
+      "b_group_kor": "학습"
+    },
+    {
+      "b_code": "B41",
+      "b_eng": "health",
+      "b_kor": "건강",
+      "b_level": 1,
+      "b_group_code": "B4",
+      "b_group_eng": "lifestyle",
+      "b_group_kor": "생활"
+    },
+    {
+      "b_code": "B42",
+      "b_eng": "fashion",
+      "b_kor": "패션",
+      "b_level": 1,
+      "b_group_code": "B4",
+      "b_group_eng": "lifestyle",
+      "b_group_kor": "생활"
+    },
+    {
+      "b_code": "B51",
+      "b_eng": "politics",
+      "b_kor": "정치",
+      "b_level": 1,
+      "b_group_code": "B5",
+      "b_group_eng": "issue",
+      "b_group_kor": "이슈"
+    },
+    {
+      "b_code": "B52",
+      "b_eng": "entertainment",
+      "b_kor": "연예",
+      "b_level": 1,
+      "b_group_code": "B5",
+      "b_group_eng": "issue",
+      "b_group_kor": "이슈"
+    }
+  ]
+}

@@ -34,6 +34,7 @@ import kakaoRouter from "../routes/kakaoAPI.js";
 import { scheduleJob } from "node-schedule";
 import { removeAttach } from "../modules/remove_attach.js";
 import { removePost } from "../modules/remove_post.js";
+import { importBoard } from "../modules/import_board.js";
 
 // create express framework
 const app = express();
@@ -102,6 +103,11 @@ app.use((err, req, res, next) => {
   // render the error page
   res.status(err.status || 500);
   res.render("error");
+});
+
+// import board data
+app.listen(process.env.PORT, async () => {
+  await importBoard();
 });
 
 // execute scheduler

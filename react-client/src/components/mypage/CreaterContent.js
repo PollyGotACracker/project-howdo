@@ -28,7 +28,9 @@ const CreaterContent = () => {
   useEffect(() => {
     setVideoContentList(result?.recent);
     console.log(videoContentList);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const CONTENT_WIDTH = 392;
   const setHover = (v_code, toggle) => {
     setVideoContentList([

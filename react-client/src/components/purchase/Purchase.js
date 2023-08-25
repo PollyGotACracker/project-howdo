@@ -35,6 +35,7 @@ const Purchase = (props) => {
             <img
               className="inline-block w-40 rounded-full p-6"
               src="https://yt3.ggpht.com/Uk6ujyzSetiuHYpEaEPzscAjGx_a4Vd2j3zQ-z_ciFySagb23eiD2-YzRxr18xK1bMedCNhxEg=s256-c-k-c0x00ffffff-no-rj"
+              alt="creater profile"
             />
             <div>
               <h1 className="text-2xl m-2">{nickname}</h1>

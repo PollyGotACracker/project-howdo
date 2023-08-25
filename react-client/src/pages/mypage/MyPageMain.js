@@ -1,6 +1,6 @@
 import { Await, defer, useLoaderData, useNavigate } from "react-router-dom";
 import { useUserContext } from "@contexts/UserContextProvider";
-import { usePayContext } from "@contexts/PayContextProvider";
+// import { usePayContext } from "@contexts/PayContextProvider";
 import Purchase from "@components/purchase/Purchase";
 import ModifyPopup from "@components/mypage/ModifyPopup";
 import React from "react";
@@ -18,15 +18,16 @@ const MyPageMain = () => {
   const CreaterContent = React.lazy(() =>
     import("@components/mypage/CreaterContent")
   );
-  const { userSession, modalHandler, setModifierOpen, modifierOpen } =
-    useUserContext();
-  const { payReadyBody, statePayReady } = usePayContext();
+  // const { userSession, modalHandler, setModifierOpen, modifierOpen } =
+  //   useUserContext();
+  const { userSession, setModifierOpen, modifierOpen } = useUserContext();
+  // const { payReadyBody, statePayReady } = usePayContext();
   const navigate = useNavigate();
-  const twoClickEvent = () => {
-    modalHandler();
-    payReadyBody();
-    console.log(statePayReady);
-  };
+  // const twoClickEvent = () => {
+  //   modalHandler();
+  //   payReadyBody();
+  //   console.log(statePayReady);
+  // };
   const result = useLoaderData();
   console.log(userSession);
   // 유저 세션에 username 이 존재할 때 mypage 구현 없으실 home으로 돌아가지도록 설정
@@ -47,6 +48,7 @@ const MyPageMain = () => {
                       ? userSession.title_image
                       : "./images/noimage.png"
                   }
+                  alt="title"
                 />
               </div>
               <div className="mt-12 mb-6 pl-56 w-11/12 flex">

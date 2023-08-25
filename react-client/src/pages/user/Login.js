@@ -31,6 +31,7 @@ const Login = () => {
 
   useEffect(() => {
     setLoginError({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

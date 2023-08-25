@@ -51,6 +51,7 @@ const PostDetail = () => {
       setUpvotes(post?.p_upvotes);
       setReplyCount(count);
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const btnClass01 =

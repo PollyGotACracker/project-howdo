@@ -30,6 +30,7 @@ const CreaterMain = () => {
                       ? item.profile_image
                       : "../images/noimage.png"
                   }
+                  alt="profile"
                 />
                 <div className="mt-4 text-center">닉네임 : {item.nickname}</div>
               </div>

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 import { useLoaderData } from "react-router-dom";
-import { useUserContext } from "@contexts/UserContextProvider";
 import { useVideoContentContext } from "@/contexts/VideoContentContextProvider";
 import {
   moreButton,
@@ -16,13 +15,16 @@ import {
   IoArrowForwardCircleSharp,
   IoArrowBackCircleSharp,
 } from "react-icons/io5";
+
 const CreaterPageContent = () => {
   const createrResult = useLoaderData();
   const { videoContentList, setVideoContentList } = useVideoContentContext();
   const [position, setPosition] = useState(0);
   const CONTENT_WIDTH = 392;
+
   useEffect(() => {
     setVideoContentList(createrResult.v_result);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setHover = (v_code, toggle) => {

@@ -17,6 +17,7 @@ const ShortsMain = () => {
       setVideoItemList([...tempArray]);
     };
     item();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const videoView = videoItemList.map((video) => {

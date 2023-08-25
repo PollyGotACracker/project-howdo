@@ -2,17 +2,15 @@ import { useState } from "react";
 import { getReply, insertReply, deleteReply } from "@services/post.service";
 import { useUserContext } from "@contexts/UserContextProvider";
 import { usePostContext } from "@contexts/PostContextProvider";
-import { UserCircleIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import { useLocation } from "react-router-dom";
+import { UserCircleIcon } from "@heroicons/react/24/outline";
 
 const ReplyItem = ({ writer, item, index }) => {
-  const location = useLocation();
   const { userSession } = useUserContext();
   const { initReply, setReplyList, setReplyCount } = usePostContext();
   const [showChild, setShowChild] = useState(false);
   const [inputValues, setInputValues] = useState([]);
   const [cReplyInput, setCReplyInput] = useState(initReply);
-  const [cReplyCount, setCReplyCount] = useState(item.r_children);
+  const [cReplyCount] = useState(item.r_children);
 
   const btnClass02 =
     "bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded";

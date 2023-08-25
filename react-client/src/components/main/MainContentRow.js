@@ -4,6 +4,7 @@ import { usePostContext } from "@contexts/PostContextProvider";
 import { useTransferContext } from "@contexts/TransferContextProvider";
 import { useVideoContentContext } from "@contexts/VideoContentContextProvider";
 import { getReply } from "@services/post.service";
+
 const MainContentRow = () => {
   const { contentButton } = useTransferContext();
   const {
@@ -12,7 +13,7 @@ const MainContentRow = () => {
     setVideoItemList,
     setReplyList,
   } = useVideoContentContext();
-  const { replyCount, setReplyCount } = usePostContext();
+  const { setReplyCount } = usePostContext();
   const nav = useNavigate();
 
   useEffect(() => {
@@ -24,6 +25,7 @@ const MainContentRow = () => {
       setVideoItemList([...tempArray]);
     };
     item();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onClickHandler = async (e) => {
@@ -51,6 +53,7 @@ const MainContentRow = () => {
         <iframe
           className="w-full h-full columns-1 aspect-video border-black border-1"
           src={video.v_src}
+          title="video"
         ></iframe>
         <div className="item-left">
           <img data-v_code={video.v_code} alt="profile"></img>

@@ -39,7 +39,11 @@ const PayReady = () => {
                 payReady(statePayReady);
               }}
             >
-              <img src="/images/kakao_pay.png" className="h-8 w-15" />
+              <img
+                src="/images/kakao_pay.png"
+                className="h-8 w-15"
+                alt="kakao pay"
+              />
             </button>
           </div>
         </div>

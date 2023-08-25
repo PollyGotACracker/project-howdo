@@ -17,7 +17,7 @@ import { useUserContext } from "@contexts/UserContextProvider";
 
 const Approve = () => {
   const { approve, setApprove } = usePayContext();
-  const { userSession, setUserSession } = useUserContext();
+  const { userSession } = useUserContext();
   const query = window.location.search;
   const pg_token = query.substring(10, 30);
   const tid = localStorage.getItem("tid");
@@ -74,6 +74,7 @@ const Approve = () => {
         oneApprovalSave(data);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const nextPay = moment(approve?.approved_at)

@@ -28,6 +28,7 @@ const Join = () => {
 
   useEffect(() => {
     setJoinUser({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -50,6 +51,7 @@ const Join = () => {
       }
       console.log(result);
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [joinUser]);
 
   const submitHandler = (e) => {

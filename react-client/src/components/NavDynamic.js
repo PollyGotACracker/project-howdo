@@ -1,10 +1,10 @@
 import "@styles/Nav.css";
-import { useState } from "react";
 import VideoUpload from "@components/video/VideoUpload";
 import { navDyna } from "@styles/tailwindStyle";
 import { useUserContext } from "@contexts/UserContextProvider";
 import { useNavigate } from "react-router-dom";
 import { useVideoContentContext } from "@contexts/VideoContentContextProvider";
+
 const NavDynamic = ({ nOpen, setNOpen }) => {
   const nav = useNavigate();
   const { userSession } = useUserContext();

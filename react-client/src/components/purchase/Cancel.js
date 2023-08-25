@@ -1,12 +1,10 @@
 import { useUserContext } from "@contexts/UserContextProvider";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { cancelUser } from "@services/auth.service";
-import { useNavigate } from "react-router-dom";
 
 const Cancel = (props) => {
   const { modal, cancelHandler, userSession } = useUserContext();
   const { orderUser, nickname } = props;
-  const nav = useNavigate();
 
   return (
     <div>

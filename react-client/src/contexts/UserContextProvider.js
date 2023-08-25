@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useRef, useEffect } from "react";
 import { User } from "@data/User";
 import { Login } from "@data/Login";
 import { UserSession } from "@data/UserSession";
-import { fetchUser, fetchLogin, expireUser } from "@services/auth.service";
+import { fetchUser } from "@services/auth.service";
 
 const UserContext = createContext();
 
@@ -48,7 +48,7 @@ export const UserContextProvider = ({ children }) => {
     console.log(userSession);
   };
 
-  let dataExpireUser;
+  // let dataExpireUser;
 
   useEffect(() => {
     (async () => {
@@ -60,6 +60,7 @@ export const UserContextProvider = ({ children }) => {
         setUserSession(new UserSession());
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const props = {

@@ -60,12 +60,12 @@ export const VideoContentContextProvider = ({ children }) => {
 
   const deleteVideo = (deleteData) => {
     console.log(deleteData);
-    const fetchOption = {
-      method: "POST",
-      body: JSON.stringify(deleteData),
-      headers: { "Content-Type": "application/json" },
-    };
-    const res = fetch(`/video/delete`, fetchOption);
+    // const fetchOption = {
+    //   method: "POST",
+    //   body: JSON.stringify(deleteData),
+    //   headers: { "Content-Type": "application/json" },
+    // };
+    // const res = fetch(`/video/delete`, fetchOption);
   };
 
   const props = {

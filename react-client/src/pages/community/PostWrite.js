@@ -44,6 +44,7 @@ const PostWrite = () => {
     else {
       setPostData({ ...data });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onChangeContentHandler = (e, editor) => {

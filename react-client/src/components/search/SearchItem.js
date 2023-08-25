@@ -11,7 +11,7 @@ import {
 export const SearchItem = () => {
   const navigate = useNavigate();
   const SearchR = useLoaderData();
-  const { searchKeyword, setSearchKeyword } = useAutoSearchContext();
+  const { searchKeyword } = useAutoSearchContext();
   const itemClick = (item) => {
     navigate(`/creater/${item.nickname}`);
   };
@@ -30,6 +30,7 @@ export const SearchItem = () => {
           src={
             item?.profile_image ? item.profile_image : "../image/noimage.png"
           }
+          alt="profile"
         ></img>
         <div className="mt-4 text-center">닉네임 : {item.nickname}</div>
       </div>

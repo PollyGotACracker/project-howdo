@@ -13,7 +13,7 @@ const NavRow = () => {
   const { currentSearch, onChange, onKeyUp, autoComplete, setCurrentSearch } =
     useAutoSearchContext();
   const { userSession, logoutHandler } = useUserContext();
-  const { searchKeyword, setSearchKeyword } = useAutoSearchContext();
+  const { setSearchKeyword } = useAutoSearchContext();
   const [idx, setIdx] = useState(0);
   const [temp, setTemp] = useState();
   const searchRef = useRef(null);
@@ -50,12 +50,9 @@ const NavRow = () => {
           if (idx - 1 === -1) {
             setIdx(searchParentRef.current.childElementCount - 1);
           } else setIdx(idx - 1);
-
           console.log(idx);
-
           setTemp(word[idx]?.innerText);
           console.log(temp);
-
           break;
         case 40:
           console.log(idx);
@@ -63,7 +60,6 @@ const NavRow = () => {
           setTemp(word[idx]?.innerText);
           console.log(temp);
           if (searchParentRef.current.childElementCount === idx + 1) setIdx(0);
-
           break;
         case 27:
           setIdx(0);
@@ -75,6 +71,8 @@ const NavRow = () => {
           navigate(`/search/${currentSearch}`);
           setCurrentSearch();
           break;
+        default:
+          return false;
       }
     }
   };

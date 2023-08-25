@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useRef, useState } from "react";
 import { useUserContext } from "@contexts/UserContextProvider";
 import { Modifier } from "@styles/tailwindStyle";
@@ -15,14 +14,14 @@ const ModifyPopup = () => {
   const updateHandler = async () => {
     const profileImage = new FormData();
     profileImage.append("profile", newProfileImage);
-    const fecthOption = {
-      method: "POST",
-      body: profileImage,
-    };
-    const res = await fetch(
-      `/user/update/${userSession.username}`,
-      fecthOption
-    );
+    // const fecthOption = {
+    //   method: "POST",
+    //   body: profileImage,
+    // };
+    // const res = await fetch(
+    //   `/user/update/${userSession.username}`,
+    //   fecthOption
+    // );
     setModifierOpen(false);
   };
 
@@ -44,6 +43,7 @@ const ModifyPopup = () => {
               className="m-auto mt-12"
               width="150px"
               height="150px"
+              alt="profile"
               src={
                 tempImage
                   ? tempImage

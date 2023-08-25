@@ -2,13 +2,7 @@
 import BoardList from "@components/community/board/BoardList";
 import "@styles/community/Board.css";
 import { getBoardPosts } from "@services/post.service";
-import {
-  useNavigate,
-  useLocation,
-  useLoaderData,
-  Link,
-  useParams,
-} from "react-router-dom";
+import { useLocation, useLoaderData, Link } from "react-router-dom";
 import { useUserContext } from "@contexts/UserContextProvider";
 import {
   BarsArrowDownIcon,
@@ -26,7 +20,6 @@ export const BoardLoader = async ({ params }) => {
 };
 
 const Board = () => {
-  const nav = useNavigate();
   const { keyValue, setKeyValue } = usePostContext();
   const location = useLocation();
   const { userSession } = useUserContext();
@@ -87,6 +80,8 @@ const Board = () => {
     //   setFilterValue({ ...location?.state?.filter });
     //   setSearchInput(location?.state?.search);
     // }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.key]);
 
   const onClickSetOrder = async (value, text) => {

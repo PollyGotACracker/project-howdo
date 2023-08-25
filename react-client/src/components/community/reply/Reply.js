@@ -1,5 +1,5 @@
 import ReplyList from "@components/community/reply/ReplyList";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState } from "react";
 import { useUserContext } from "@contexts/UserContextProvider";
 import { usePostContext } from "@contexts/PostContextProvider";
 import { insertReply, getReply } from "@services/post.service";
@@ -14,6 +14,7 @@ const Reply = ({ writer, p_code = null, v_code = null, list }) => {
   useEffect(() => {
     setReplyList([...list]);
     setReplyInput(initReply);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 댓글 입력 데이터 갱신

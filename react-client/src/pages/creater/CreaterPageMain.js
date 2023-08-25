@@ -54,6 +54,7 @@ const CreaterPageMain = () => {
                   ? createrResult.u_result?.title_image
                   : "../images/noimage.png"
               }
+              alt="title"
             />
           </div>
           <div className="mt-12 mb-6 pl-56 w-11/12 flex">

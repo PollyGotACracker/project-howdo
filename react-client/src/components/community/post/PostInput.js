@@ -23,6 +23,7 @@ const PostInput = ({ update, boardVal, setBoardVal }) => {
 
   useEffect(() => {
     onChangeSearchBoard(boardInput);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardInput]);
 
   const onChangeSearchBoard = async (value) => {

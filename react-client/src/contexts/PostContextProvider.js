@@ -36,15 +36,6 @@ export const PostContextProvider = ({ children }) => {
   const [postData, setPostData] = useState(initPost);
   const [replyList, setReplyList] = useState([]);
   const [replyCount, setReplyCount] = useState();
-  const [boardData, setBoardData] = useState({
-    b_code: "",
-    b_eng: "",
-    b_kor: "",
-    b_group_code: "",
-    b_group_eng: "",
-    b_group_kor: "",
-  });
-  const [keyValue, setKeyValue] = useState("");
 
   const props = {
     boardList,
@@ -53,14 +44,10 @@ export const PostContextProvider = ({ children }) => {
     postData,
     setPostData,
     initReply,
-    boardData,
-    setBoardData,
     replyList,
     setReplyList,
     replyCount,
     setReplyCount,
-    keyValue,
-    setKeyValue,
   };
 
   return <PostContext.Provider value={props}>{children}</PostContext.Provider>;

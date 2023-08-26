@@ -32,10 +32,23 @@ export const getMainPosts = async () => {
 
 export const getBoardPosts = async (bEng, order = "latest") => {
   try {
-    const response = await fetch(`/community/board/${bEng}/${order}/get`);
+    const response = await fetch(`/community/posts/${bEng}/${order}/get`);
     const result = await response.json();
     // board, data;
     return result;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const getSearchedPosts = async ({ bCode, value, filter, order }) => {
+  try {
+    const response = await fetch(
+      `/community/posts/${bCode}/${value}/${filter}/${order}/search`
+    );
+    const result = await response.json();
+    if (result.ERROR) alert(result.ERROR);
+    else return result;
   } catch (err) {
     return null;
   }

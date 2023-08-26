@@ -4,8 +4,6 @@ import { QueryTypes } from "sequelize";
 import { Op } from "sequelize";
 import fileUp from "../modules/file_upload.js";
 import DB from "../models/index.js";
-import fs from "fs";
-import path from "path";
 import { v4 } from "uuid";
 import moment from "moment";
 import { sanitizer } from "../modules/sanitize_html.js";
@@ -268,7 +266,7 @@ router.get("/board/:value?/get", async (req, res) => {
 });
 
 // community 게시판의 게시글 표시 및 정렬
-router.get("/board/:bEng/:order/get", async (req, res) => {
+router.get("/posts/:bEng/:order/get", async (req, res) => {
   const bEng = req.params.bEng;
   const order = req.params.order;
 

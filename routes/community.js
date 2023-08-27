@@ -8,6 +8,8 @@ import { v4 } from "uuid";
 import moment from "moment";
 import { sanitizer } from "../modules/sanitize_html.js";
 
+// POST-ATTACH 관계 설정할 경우 에디터에 이미지를 등록할 때
+// 게시글보다 첨부파일이 먼저 등록되므로 INSERT 되지 않는 문제 발생
 const USER = DB.models.user;
 const BOARD = DB.models.board;
 const POST = DB.models.post;
@@ -49,31 +51,18 @@ router.get("/boards/get", async (req, res) => {
   }
 });
 
-// POST-ATTACH 관계 설정할 경우 에디터에 이미지를 등록할 때
-// 게시글보다 첨부파일이 먼저 등록되므로 INSERT 되지 않는 문제 발생
-
 // community Main fetch
 router.get("/posts/get", async (req, res) => {
   try {
-    // 그룹 B1 을 제외한 모든 그룹 리스트
-    // 코드 수정 필요
-    const notGeneral = await BOARD.findAll({
-      attributes: ["b_group_code", "b_group_kor"],
-      where: { b_group_code: { [Op.not]: "B1" } },
-      group: "b_group_code",
-    });
+    const addBoardList = async (obj) => {
+      // boardList: b_group_code / noticeList, freeList: b_code
+      const condition = obj.hasOwnProperty(`b_group_code`)
+        ? { b_group_code: `${obj.b_group_code}` }
+        : { b_code: obj.b_code };
 
-    const boardList = [];
-    for (let board of notGeneral) {
-      let items = {};
-      items.b_group_code = `${board.b_group_code}`;
-      items.b_group_kor = `${board.b_group_kor}`;
-      items.list = await POST.findAll({
+      obj.list = await POST.findAll({
         where: {
-          [Op.and]: [
-            { b_group_code: `${board.b_group_code}` },
-            { p_deleted: null },
-          ],
+          [Op.and]: [condition, { p_deleted: null }],
         },
         include: [
           { model: BOARD, attributes: ["b_code", "b_kor", "b_eng"] },
@@ -85,55 +74,32 @@ router.get("/posts/get", async (req, res) => {
         limit: 5,
         subQuery: false,
         order: [
-          ["p_upvotes", "DESC"],
           ["p_date", "DESC"],
+          ["p_time", "DESC"],
         ],
         raw: true,
       });
+    };
+
+    const noticeList = { b_code: `B11`, b_kor: `공지`, list: [] };
+    const freeList = { b_code: `B12`, b_kor: `자유게시판`, list: [] };
+    await addBoardList(noticeList);
+    await addBoardList(freeList);
+
+    // 그룹 B1 을 제외한 모든 그룹 리스트
+    const notGeneral = await BOARD.findAll({
+      attributes: ["b_group_code", "b_group_kor"],
+      where: { b_group_code: { [Op.not]: "B1" } },
+      group: "b_group_code",
+    });
+    const boardList = [];
+    for (let board of notGeneral) {
+      let items = {};
+      items.b_group_code = `${board.b_group_code}`;
+      items.b_group_kor = `${board.b_group_kor}`;
+      await addBoardList(items);
       boardList.push(items);
     }
-
-    // 코드 정리 필요
-
-    const noticeList = {};
-    noticeList.b_code = `B11`;
-    noticeList.b_kor = `공지`;
-    noticeList.list = await POST.findAll({
-      where: {
-        [Op.and]: [{ b_code: `B11` }, { p_deleted: null }],
-      },
-      include: [{ model: BOARD, attributes: ["b_code", "b_kor", "b_eng"] }],
-      limit: 5,
-      subQuery: false,
-      order: [
-        ["p_date", "DESC"],
-        ["p_time", "DESC"],
-      ],
-      raw: true,
-    });
-
-    const freeList = {};
-    freeList.b_code = `B12`;
-    freeList.b_kor = `자유게시판`;
-    freeList.list = await POST.findAll({
-      where: {
-        [Op.and]: [{ b_code: `B12` }, { p_deleted: null }],
-      },
-      include: [
-        { model: BOARD, attributes: ["b_code", "b_kor", "b_eng"] },
-        {
-          model: USER,
-          attributes: ["nickname"],
-        },
-      ],
-      limit: 5,
-      subQuery: false,
-      order: [
-        ["p_date", "DESC"],
-        ["p_time", "DESC"],
-      ],
-      raw: true,
-    });
 
     return res.status(200).send({ noticeList, freeList, boardList });
   } catch (err) {

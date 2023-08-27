@@ -15,3 +15,7 @@ export const select = classNames(
 export const option = classNames(
   "w-full p-2 hover:bg-blue-500 hover:text-white"
 );
+
+export const userImage = classNames("inline-block h-10 w-10 text-slate-500");
+
+export const postIcon = classNames("inline-block pt-1 h-5 w-5 text-slate-500");

@@ -1,18 +1,19 @@
-export const groupBoardList = (data) => {
-  return data.reduce((acc, obj) => {
-    let key = obj["b_group_kor"];
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(obj);
-    return acc;
-  }, {});
-};
+import groupBoardList from "@utils/groupBoardList";
 
 export const getBoardList = async () => {
   try {
     const response = await fetch("/community/boards/get");
     const result = await response.json();
+    return result;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const getSearchedBoard = async (value) => {
+  try {
+    const response = await fetch(`/community/board/${value}/get`);
+    const result = await response.json().then((data) => groupBoardList(data));
     return result;
   } catch (err) {
     return null;
@@ -87,12 +88,14 @@ export const submitPost = async (data, pCode = null) => {
       response = await fetch("/community/post/update", fetchOption);
     }
     const result = await response.json();
-    if (result.ERROR) {
+    if (result?.ERROR) {
       alert(result.ERROR);
       return null;
     }
-    alert(result.MESSAGE);
-    return result;
+    if (result?.MESSAGE) {
+      alert(result.MESSAGE);
+      return result;
+    }
   } catch (err) {
     return null;
   }

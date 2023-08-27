@@ -253,16 +253,20 @@ router.get("/posts/:bCode/:value/:filter/:order/search", async (req, res) => {
 // write 페이지에서 게시판 검색
 router.get("/board/:value?/get", async (req, res) => {
   const value = req?.params?.value;
-  // cf) value 가 없을 경우 where 절을 {} 로 설정하여 전체 목록 표시
-  const result = await BOARD.findAll({
-    where: value
-      ? {
-          b_kor: { [Op.like]: `%${value}%` },
-        }
-      : {},
-    raw: true,
-  });
-  return res.status(200).send(result);
+  try {
+    // cf) value 가 없을 경우 where 절을 {} 로 설정하여 전체 목록 표시
+    const result = await BOARD.findAll({
+      where: value
+        ? {
+            b_kor: { [Op.like]: `%${value}%` },
+          }
+        : {},
+      raw: true,
+    });
+    return res.status(200).send(result);
+  } catch (err) {
+    console.error(err);
+  }
 });
 
 // community 게시판의 게시글 표시 및 정렬

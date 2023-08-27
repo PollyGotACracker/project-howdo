@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { usePostContext } from "@contexts/PostContextProvider";
 import { useUserContext } from "@contexts/UserContextProvider";
-import { groupBoardList, getBoardList } from "@services/post.service";
+import { getBoardList, getSearchedBoard } from "@services/post.service";
+import groupBoardList from "@utils/groupBoardList";
 
-const PostInput = ({ update, boardVal, setBoardVal }) => {
+const PostWriteBoard = ({ boardData, setBoardData, update }) => {
   const { postData, setPostData } = usePostContext();
   const [showBoard, setShowBoard] = useState(false);
   const [boardInput, setBoardInput] = useState("");
@@ -21,17 +22,10 @@ const PostInput = ({ update, boardVal, setBoardVal }) => {
     await getBoardList().then((data) => groupBoardList(data));
   };
 
-  useEffect(() => {
-    onChangeSearchBoard(boardInput);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boardInput]);
-
   const onChangeSearchBoard = async (value) => {
     setBoardInput(value);
-    let result = await fetch(`/community/board/${boardInput}/get`)
-      .then((data) => data.json())
-      .then((data) => groupBoardList(data));
-    setBoardList(result);
+    const result = await getSearchedBoard(value);
+    if (result) setBoardList(result);
   };
 
   const onChangeTitle = (e) => {
@@ -40,9 +34,13 @@ const PostInput = ({ update, boardVal, setBoardVal }) => {
 
   const onClickBoardItem = (b_code, b_kor, b_eng, b_group_code) => {
     setPostData({ ...postData, b_code: b_code, b_group_code: b_group_code });
-    setBoardVal({ bCode: b_code, bKor: b_kor, bEng: b_eng });
+    setBoardData({ bCode: b_code, bKor: b_kor, bEng: b_eng });
     setShowBoard(false);
   };
+
+  useEffect(() => {
+    onChangeSearchBoard(boardInput);
+  }, [boardInput]);
 
   const SelectList = () => {
     return Object.keys(boardList).map((group) =>
@@ -79,12 +77,12 @@ const PostInput = ({ update, boardVal, setBoardVal }) => {
     <section className="relative w-full mb-2 p-1 flex border border-[#ccced1] focus-within:border-[#0d65ff]">
       <button
         className="inline-block w-[138px] pl-2 mr-1 text-left hover:bg-[#f7f7f7]"
-        style={{ color: boardVal.bKor ? "inherit" : "#A9A3B7" }}
+        style={{ color: boardData.bKor ? "inherit" : "#A9A3B7" }}
         type="button"
         onClick={onClickShowBoard}
         disabled={update ? true : false}
       >
-        {boardVal.bKor || "게시판"}
+        {boardData.bKor || "게시판"}
       </button>
       <input
         className="peer title flex-1 p-1 pl-3 outline-none border-l border-[#ccced1]"
@@ -114,13 +112,4 @@ const PostInput = ({ update, boardVal, setBoardVal }) => {
   );
 };
 
-export default PostInput;
-
-/**
- * cf) onChange event 로 데이터 검색
- *    input value 의 마지막 글자가 잘리는 현상 해결
- * 1. input 에 onChange={event => setValue(event.target.value)} 를 setting
- * 2. state 변수인 value 를 사용하여 fetch 후 검색할 데이터를 가져오는 함수 getList(val) 만들기
- *    (val 의 인수는 event.target.value 여야)
- * 3. useEffect 의 body 영역에 getList(value), 배열에 value 를 각각 setting
- */
+export default PostWriteBoard;

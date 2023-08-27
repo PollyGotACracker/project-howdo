@@ -1,76 +1,76 @@
-import EditorModule from "@utils/EditorModule";
-import "@styles/community/Content.css";
-import { submitPost } from "@services/post.service";
-import { usePostContext } from "@contexts/PostContextProvider";
-import { useUserContext } from "@contexts/UserContextProvider";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import PostInput from "@components/community/post/PostInput";
+import "@styles/community/Post.css";
+import EditorModule from "@utils/EditorModule";
+import { btn } from "@styles/community/tailwindStyle";
+import { usePostContext } from "@contexts/PostContextProvider";
+import { useUserContext } from "@contexts/UserContextProvider";
+import { submitPost } from "@services/post.service";
+import PostWriteBoard from "@/components/community/post/PostWriteBoard";
 
 const PostWrite = () => {
+  const pCode = useParams().post;
   const nav = useNavigate();
+  const location = useLocation();
   const { userSession } = useUserContext();
   const { initPost, postData, setPostData } = usePostContext();
-  const location = useLocation();
   const { b_code, b_kor, b_eng, b_group_code } = location?.state || "";
-  const [boardVal, setBoardVal] = useState({
+  const [boardData, setBoardData] = useState({
     bCode: b_code,
     bKor: b_kor,
     bEng: b_eng,
   });
-  const data = location?.state?.data;
-  const pCode = useParams().post;
-  const btnClass =
-    "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded";
 
+  // setState 를 같은 함수 내에서 여러 번 실행하면
+  // 가장 마지막 setState 만 화면에 반영된다(batch update).
   useEffect(() => {
-    // setState 를 같은 함수 내에서 여러 번 실행하면
-    // 가장 마지막 setState 만 화면에 반영된다(batch update).
     if (!userSession?.username) {
       alert("로그인 후 이용해주세요.");
       return nav("/");
     }
-    // insert
-    if (!pCode) {
-      const init = initPost();
-      setPostData({
-        ...init,
-        username: userSession.username,
-        b_code: b_code,
-        b_group_code: b_group_code,
-      });
-    }
-    // update
-    else {
-      setPostData({ ...data });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userSession.username, nav]);
 
-  const onChangeContentHandler = (e, editor) => {
-    const data = editor.getData();
-    setPostData({ ...postData, p_content: data });
+  useEffect(() => {
+    setPostData(() => {
+      const { data = initPost() } = location?.state;
+      // insert
+      if (!pCode)
+        return {
+          ...data,
+          username: userSession?.username,
+          b_code: b_code,
+          b_group_code: b_group_code,
+        };
+      // update
+      if (pCode)
+        return {
+          ...data,
+        };
+    });
+  }, [
+    setPostData,
+    pCode,
+    location?.state,
+    initPost,
+    userSession?.username,
+    b_code,
+    b_group_code,
+  ]);
+
+  const changeContentHandler = (_, editor) => {
+    const content = editor.getData();
+    setPostData({ ...postData, p_content: content });
   };
 
-  const onClickHandler = async () => {
-    if (!postData.b_code) {
-      alert("게시판을 선택하세요.");
-      return null;
-    }
-    if (!postData.p_title) {
-      alert("제목을 입력하세요.");
-      return null;
-    }
-    if (!postData.p_content) {
-      alert("내용을 입력하세요.");
-      return null;
-    }
-    if (!userSession?.username) {
-      alert("세션이 만료되었습니다.\n로그인 후 다시 시도해주세요.");
-      return null;
-    }
+  const submitPostHandler = async () => {
+    if (!postData.b_code) return alert("게시판을 선택하세요.");
+    if (!postData.p_title) return alert("제목을 입력하세요.");
+    if (!postData.p_content) return alert("내용을 입력하세요.");
+    if (!userSession?.username)
+      return alert("세션이 만료되었습니다.\n로그인 후 다시 시도해주세요.");
+
     let result;
-    let data;
+    let post;
     const images = document?.querySelectorAll(".ck-content img");
     if (images) {
       const imageArr = Array?.from(images).map((item) => {
@@ -78,31 +78,43 @@ const PostWrite = () => {
         const url = item?.src?.slice(index + 1);
         return url;
       });
-      data = { ...postData, p_thumb: imageArr[0], p_attachs: `${imageArr}` };
+      post = { ...postData, p_thumb: imageArr[0], p_attachs: `${imageArr}` };
     }
     // insert
-    if (!pCode) result = await submitPost(data);
-    // update
-    if (pCode) result = await submitPost(data, pCode);
-    if (result.MESSAGE) {
-      nav(`/community/${boardVal.bEng}`, { replace: true });
+    if (!pCode) {
+      result = await submitPost(post);
+      if (result?.MESSAGE) {
+        nav(`/community/${boardData.bEng}`, { replace: true });
+      }
     }
-    return null;
+    // update
+    if (pCode) {
+      result = await submitPost(post, pCode);
+      if (result?.MESSAGE) {
+        nav(`/community/${boardData.bEng}/${postData.p_code}`, {
+          replace: true,
+        });
+      }
+    }
   };
 
   return (
     <form className="post-editor">
-      <PostInput boardVal={boardVal} setBoardVal={setBoardVal} update={pCode} />
+      <PostWriteBoard
+        boardData={boardData}
+        setBoardData={setBoardData}
+        update={pCode}
+      />
       <EditorModule
         data={postData.p_content}
-        handler={onChangeContentHandler}
+        handler={changeContentHandler}
         code={postData.p_code}
       />
       <button
         id="submit"
-        className={`m-6 float-right ${btnClass}`}
+        className={`m-6 float-right ${btn}`}
         type="button"
-        onClick={onClickHandler}
+        onClick={submitPostHandler}
       >
         등록
       </button>

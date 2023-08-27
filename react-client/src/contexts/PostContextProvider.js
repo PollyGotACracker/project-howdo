@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { v4 } from "uuid";
 
 const PostContext = createContext();
@@ -8,8 +8,8 @@ export const usePostContext = () => {
 };
 
 export const PostContextProvider = ({ children }) => {
-  const initPost = () => {
-    const postData = {
+  const initPost = useCallback(
+    () => ({
       p_code: v4(),
       username: "",
       p_title: "",
@@ -18,19 +18,19 @@ export const PostContextProvider = ({ children }) => {
       p_attachs: null,
       b_code: "",
       b_group_code: "",
-    };
-    return postData;
-  };
-  const initReply = () => {
-    const replyData = {
+    }),
+    []
+  );
+  const initReply = useCallback(
+    () => ({
       r_code: v4(),
       p_code: "",
       username: "",
       r_content: "",
       r_parent_code: null,
-    };
-    return replyData;
-  };
+    }),
+    []
+  );
 
   const [boardList, setBoardList] = useState([]);
   const [postData, setPostData] = useState(initPost);

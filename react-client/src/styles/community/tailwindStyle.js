@@ -4,8 +4,16 @@ export const btn = classNames(
   "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
 );
 
+export const btnOutline = classNames(
+  "bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+);
+
 export const input = classNames(
   "bg-slate-200 appearance-none border-2 border-transparent rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 p-2"
+);
+
+export const inputReply = classNames(
+  "bg-transparent border-b border-blue-700 flex-1 mr-3 py-1 px-2 leading-tight focus:outline-none"
 );
 
 export const select = classNames(

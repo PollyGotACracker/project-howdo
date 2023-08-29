@@ -1,5 +1,5 @@
-import { orderList } from "@/hooks/community/board/useOrderPosts";
-import { select, option } from "@/styles/community/tailwindStyle";
+import { orderList } from "@hooks/community/board/useOrderPosts";
+import { select, option } from "@styles/community/tailwindStyle";
 import { BarsArrowDownIcon } from "@heroicons/react/24/outline";
 
 const BoardOrder = ({
@@ -16,7 +16,7 @@ const BoardOrder = ({
         onBlur={() => setShowOrder(false)}
       >
         <BarsArrowDownIcon className="inline-block mr-3 h-5 w-5 text-slate-500" />
-        {orderValue.kor}
+        {orderValue.o_kor}
         <div
           className="flex flex-col absolute top-11 left-0 w-full bg-gray-50 rounded border border-gray-300 text-gray-900"
           style={{ display: showOrder === true ? "flex" : "none" }}

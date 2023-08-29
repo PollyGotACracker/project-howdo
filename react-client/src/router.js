@@ -9,7 +9,7 @@ import Login from "@pages/user/Login";
 import LoginModal from "@pages/user/Login";
 import CommIndex, { CommLoader } from "@pages/community/CommIndex";
 import CommMain, { CommMainLoader } from "@pages/community/CommMain";
-import Board from "@pages/community/Board";
+import Board, { BoardLoader } from "@pages/community/Board";
 import PostDetail, {
   loader as DetailLoader,
 } from "@pages/community/PostDetail";
@@ -51,6 +51,12 @@ const router = createBrowserRouter([
           { path: "", loader: CommMainLoader, element: <CommMain /> },
           {
             path: ":board",
+            loader: BoardLoader,
+            element: <Board />,
+          },
+          {
+            path: ":board/search",
+            loader: BoardLoader,
             element: <Board />,
           },
           {

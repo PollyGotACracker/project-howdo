@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export const filterList = [
   { s_eng: "title_content", s_kor: "제목+내용" },
@@ -8,21 +9,33 @@ export const filterList = [
   { s_eng: "reply", s_kor: "댓글" },
 ];
 
-export const initFilter = () => {
-  const filter = {
-    eng: `${filterList[0].s_eng}`,
-    kor: `${filterList[0].s_kor}`,
-  };
-  return filter;
+export const initFilter = {
+  s_eng: filterList[0].s_eng,
+  s_kor: filterList[0].s_kor,
 };
 
 const useFilterPosts = () => {
-  const [filterValue, setFilterValue] = useState(initFilter);
+  const [searchParams] = useSearchParams();
+  const setFilter = () => {
+    const value = searchParams.get("filter");
+    if (!value) return initFilter;
+    const matched = filterList.filter((item) => item.s_eng === value);
+    return matched[0];
+  };
+
+  const [filterValue, setFilterValue] = useState(setFilter);
   const [showFilter, setShowFilter] = useState(false);
 
   const setFilterHandler = (value, text) => {
-    setFilterValue({ ...filterValue, eng: value, kor: text });
+    setFilterValue({ s_eng: value, s_kor: text });
   };
+
+  useEffect(() => {
+    if (!searchParams.get("pageNum")) {
+      setFilterValue(initFilter);
+      setShowFilter(false);
+    }
+  }, [searchParams, setFilterValue, setShowFilter]);
 
   return {
     filterValue,

@@ -1,4 +1,4 @@
-import { input } from "@/styles/community/tailwindStyle";
+import { input } from "@styles/community/tailwindStyle";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 const BoardSearch = ({
@@ -12,7 +12,7 @@ const BoardSearch = ({
       {children}
       <input
         className={`${input} w-[20vw] rounded-none`}
-        onChange={(e) => setSearchInput(e.target.value)}
+        onChange={({ target }) => setSearchInput(target.value)}
         onKeyDown={searchPostsHandler}
         spellCheck={false}
         value={searchInput}
@@ -21,7 +21,7 @@ const BoardSearch = ({
       <button
         className={`${input} rounded-l-none`}
         onClick={searchPostsHandler}
-        disabled={searchInput.length > 0 ? false : true}
+        disabled={searchInput?.length > 0 ? false : true}
       >
         <MagnifyingGlassIcon className="inline-block h-6 w-6 text-slate-500" />
       </button>

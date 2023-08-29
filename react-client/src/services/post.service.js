@@ -10,10 +10,21 @@ export const getBoardList = async () => {
   }
 };
 
+export const getBoardData = async (bEng) => {
+  try {
+    const response = await fetch(`/community/board/${bEng}/get`);
+    const result = await response.json();
+    return result;
+  } catch (err) {
+    return null;
+  }
+};
+
 export const getSearchedBoard = async (value) => {
   try {
     const response = await fetch(`/community/board/${value}/get`);
     const result = await response.json().then((data) => groupBoardList(data));
+    // pagination, data, MESSAGE
     return result;
   } catch (err) {
     return null;
@@ -22,7 +33,7 @@ export const getSearchedBoard = async (value) => {
 
 export const getMainPosts = async () => {
   try {
-    const response = await fetch("/community/posts/get");
+    const response = await fetch("/community/main/get");
     const result = await response.json();
     // noticeList, freeList, boardList
     return result;
@@ -31,9 +42,9 @@ export const getMainPosts = async () => {
   }
 };
 
-export const getBoardPosts = async (bEng, order = "latest") => {
+export const getBoardPosts = async (query) => {
   try {
-    const response = await fetch(`/community/posts/${bEng}/${order}/get`);
+    const response = await fetch(`/community/posts/get?${query}`);
     const result = await response.json();
     // board, data;
     return result;
@@ -42,11 +53,9 @@ export const getBoardPosts = async (bEng, order = "latest") => {
   }
 };
 
-export const getSearchedPosts = async ({ bCode, value, filter, order }) => {
+export const getSearchedPosts = async (query) => {
   try {
-    const response = await fetch(
-      `/community/posts/${bCode}/${value}/${filter}/${order}/search`
-    );
+    const response = await fetch(`/community/posts/search?${query}`);
     const result = await response.json();
     if (result.ERROR) alert(result.ERROR);
     else return result;

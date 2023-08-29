@@ -1,6 +1,6 @@
-import { input, option } from "@/styles/community/tailwindStyle";
+import { input, option } from "@styles/community/tailwindStyle";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import { filterList } from "@/hooks/community/board/useFilterPosts";
+import { filterList } from "@hooks/community/board/useFilterPosts";
 
 const BoardFilter = ({
   filterValue,
@@ -14,7 +14,7 @@ const BoardFilter = ({
       onClick={() => setShowFilter(true)}
       onBlur={() => setShowFilter(false)}
     >
-      {filterValue.kor}
+      {filterValue.s_kor}
       <ChevronDownIcon className="inline-block float-right mt-0.5 ml-3 h-4 w-4 text-slate-500" />
       <div
         className="flex flex-col absolute top-11 left-0 w-full bg-gray-50 rounded border border-gray-300 text-gray-900"

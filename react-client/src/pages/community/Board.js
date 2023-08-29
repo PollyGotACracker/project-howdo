@@ -1,9 +1,17 @@
 // 각 게시판별 페이지
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import {
+  useLoaderData,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import "@styles/community/Board.css";
-import { getBoardPosts, getSearchedPosts } from "@services/post.service";
-import useGetPosts from "@hooks/community/board/useGetPosts";
+import {
+  getBoardData,
+  getBoardPosts,
+  getSearchedPosts,
+} from "@services/post.service";
 import useOrderPosts, { initOrder } from "@hooks/community/board/useOrderPosts";
 import useFilterPosts, {
   initFilter,
@@ -15,11 +23,25 @@ import BoardSearch from "@components/community/board/BoardSearch";
 import BoardWriteButton from "@components/community/board/BoardWriteButton";
 import BoardSearchHeader from "@components/community/board/BoardSearchHeader";
 import BoardPostList from "@components/community/board/BoardPostList";
+import BoardNav from "@components/community/board/BoardNav";
+
+const listLimit = 5;
+const pageNavCount = 5;
+let pageNum;
+
+export const BoardLoader = async ({ params }) => {
+  const bEng = params?.board;
+  const boardData = await getBoardData(bEng);
+  return { boardData: boardData };
+};
 
 const Board = () => {
-  const location = useLocation();
-  const [locKey, setLocKey] = useState("");
-  const { boardData, postList, setPostList } = useGetPosts();
+  const bEng = useParams().board;
+  const boardData = useLoaderData()?.boardData;
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [pagination, setPagination] = useState({});
+  const [postList, setPostList] = useState([]);
   const { orderValue, setOrderValue, showOrder, setShowOrder } =
     useOrderPosts();
   const {
@@ -33,18 +55,16 @@ const Board = () => {
     useSearchPosts();
 
   useEffect(() => {
-    if (location.key !== locKey) {
+    if (!searchParams.get("pageNum")) {
       setOrderValue(initOrder);
-      setShowOrder(false);
       setFilterValue(initFilter);
+      setShowOrder(false);
       setShowFilter(false);
-      setSearchMsg("");
       setSearchInput("");
+      setSearchMsg("");
     }
-    setLocKey(location.key);
   }, [
-    location.key,
-    locKey,
+    searchParams,
     setFilterValue,
     setOrderValue,
     setSearchInput,
@@ -53,44 +73,72 @@ const Board = () => {
     setShowOrder,
   ]);
 
-  const setOrderHandler = async (value, text) => {
-    // search 가 없을 때
-    if (!location?.state?.msg) {
-      const result = await getBoardPosts(boardData?.b_eng, value).then(
-        (result) => result.data
-      );
-      setPostList([...result]);
-    }
-    // search 가 있을 때
-    else {
-      const result = await getSearchedPosts({
-        bCode: boardData?.b_code,
-        value: searchInput,
-        filter: filterValue?.eng,
-        order: value,
-      }).then((result) => result.data);
-      setPostList([...result]);
-    }
-    setOrderValue({ eng: value, kor: text });
+  useEffect(() => {
+    (async () => {
+      const isSearched = searchParams.get("keyword");
+      let result;
+      let query = new URLSearchParams({
+        bEng: boardData.b_eng,
+        bCode: boardData.b_code,
+        order: searchParams.get("order") || "latest",
+        pageNum: searchParams.get("pageNum") || 1,
+        listLimit: listLimit,
+        pageNavCount: pageNavCount,
+      });
+
+      if (!isSearched) {
+        query.toString();
+        result = await getBoardPosts(query);
+      }
+      if (isSearched) {
+        query.append("keyword", searchParams.get("keyword"));
+        query.append("filter", searchParams.get("filter"));
+        query.toString();
+        result = await getSearchedPosts(query);
+        setSearchMsg(result?.MESSAGE);
+      }
+
+      setPagination({ ...result?.pagination });
+      setPostList([...result?.data]);
+    })();
+  }, [searchParams, boardData.b_code, boardData.b_eng, setSearchMsg]);
+
+  const setOrderHandler = async (orderEng, orderKor) => {
+    setOrderValue({ o_eng: orderEng, o_kor: orderKor });
     setShowOrder(false);
+
+    let query = new URLSearchParams({
+      pageNum: pageNum || 1,
+      listLimit,
+      pageNavCount,
+      order: orderEng,
+    });
+    const isSearched = searchInput && searchInput !== "";
+    if (!isSearched) {
+      query = query.toString();
+      navigate(`/community/${boardData.b_eng}?${query}`);
+    }
+    if (isSearched) {
+      query.append("filter", filterValue.s_eng);
+      query.append("keyword", searchInput);
+      query = query.toString();
+      navigate(`/community/${boardData.b_eng}/search?${query}`);
+    }
   };
 
   const searchPostsHandler = async (e) => {
-    if (e.type === "click" || (e.type === "keydown" && e.keyCode === 13)) {
-      const result = await getSearchedPosts({
-        bCode: boardData.b_code,
-        value: searchInput,
-        filter: filterValue.eng,
-        order: orderValue.eng,
-      });
-      setPostList([...result.data]);
-      setSearchInput(searchInput);
-      setFilterValue({
-        ...filterValue,
-        eng: filterValue.eng,
-        kor: filterValue.kor,
-      });
-      setSearchMsg(result.MESSAGE);
+    const isSubmitted =
+      (e.type === "keydown" && e.keyCode === 13) || e.type === "click";
+    if (isSubmitted) {
+      const query = new URLSearchParams({
+        pageNum: 1,
+        listLimit,
+        pageNavCount,
+        order: orderValue.o_eng,
+        filter: filterValue.s_eng,
+        keyword: searchInput,
+      }).toString();
+      navigate(`/community/${boardData.b_eng}/search?${query}`);
     }
   };
 
@@ -122,8 +170,17 @@ const Board = () => {
       </section>
       <BoardSearchHeader searchMsg={searchMsg} bEng={boardData.b_eng} />
       <BoardPostList board={boardData} data={postList} />
+      <BoardNav
+        bEng={bEng}
+        pagination={pagination}
+        listLimit={listLimit}
+        pageNavCount={pageNavCount}
+      />
     </main>
   );
 };
 
 export default Board;
+
+// cf) useLocation 의 state 는 useState 와 달리
+// 새로고침해도 데이터가 사라지지 않고, url이 바뀌었을 때만 사라진다.

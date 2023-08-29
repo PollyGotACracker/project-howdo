@@ -1,5 +1,5 @@
 import "@styles/community/Index.css";
-import BoardNav from "@components/community/board/BoardNav";
+import BoardLinks from "@components/community/board/BoardLinks";
 import { useLoaderData, Outlet } from "react-router-dom";
 import { getBoardList } from "@services/post.service";
 
@@ -13,7 +13,7 @@ const CommIndex = () => {
 
   return (
     <main className="comm-index container mx-auto">
-      <BoardNav data={board} />
+      <BoardLinks data={board} />
       <Outlet />
     </main>
   );

@@ -44,7 +44,20 @@ const orderOption = {
 // get board list
 router.get("/boards/get", async (req, res) => {
   try {
-    const board = await BOARD.findAll();
+    const boards = await BOARD.findAll();
+    return res.status(200).send(boards);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+// get board data
+router.get("/board/:bEng/get", async (req, res) => {
+  const bEng = req.params?.bEng;
+  try {
+    const board = await BOARD.findOne({
+      where: { b_eng: bEng },
+    });
     return res.status(200).send(board);
   } catch (err) {
     console.error(err);
@@ -52,7 +65,7 @@ router.get("/boards/get", async (req, res) => {
 });
 
 // community Main fetch
-router.get("/posts/get", async (req, res) => {
+router.get("/main/get", async (req, res) => {
   try {
     const addBoardList = async (obj) => {
       // boardList: b_group_code / noticeList, freeList: b_code
@@ -107,144 +120,35 @@ router.get("/posts/get", async (req, res) => {
   }
 });
 
-router.get("/posts/:bCode/:value/:filter/:order/search", async (req, res) => {
-  const bCode = req.params.bCode;
-  const value = req.params.value;
-  const filter = req.params.filter;
-  const order = req.params.order;
-  /**
-   * [^><]: 괄호 안 문자 부등호 >< 는 모두 제외
-   * [^><]*[^><]*: 부등호를 제외한 모든 문자(0~n개) 일치
-   * (?=<): 정규식 그룹 패턴. 이전 결과에서 < 직전에 오는 문자열만 일치(재필터링)
-   */
-  const filterList = {
-    title_content: {
-      where: {
-        [Op.and]: [
-          {
-            [Op.or]: [
-              { p_title: { [Op.like]: `%${value}%` } },
-              {
-                p_content: {
-                  [Op.regexp]: `[^><]*${value}[^><]*(?=<)`,
-                },
-              },
-            ],
-          },
-          { b_code: bCode },
-        ],
-      },
-      include: {
-        model: USER,
-        attributes: ["nickname"],
-      },
-      order: orderOption[`${order}`],
-    },
-    title: {
-      where: {
-        [Op.and]: [{ p_title: { [Op.like]: `%${value}%` } }, { b_code: bCode }],
-      },
-      include: {
-        model: USER,
-        attributes: ["nickname"],
-      },
-      order: orderOption[`${order}`],
-    },
-    content: {
-      where: {
-        [Op.and]: [
-          {
-            p_content: {
-              [Op.regexp]: `[^><]*${value}[^><]*(?=<)`,
-            },
-          },
-          { b_code: bCode },
-        ],
-      },
-      include: {
-        model: USER,
-        attributes: ["nickname"],
-      },
-      order: orderOption[`${order}`],
-    },
-    nickname: {
-      where: { b_code: bCode },
-      include: {
-        model: USER,
-        attributes: ["nickname"],
-        where: { nickname: { [Op.like]: `%${value}%` } },
-      },
-      order: orderOption[`${order}`],
-    },
-    reply: {
-      where: { b_code: bCode },
-      include: [
-        {
-          model: REPLY,
-          attributes: ["r_code", "r_content"],
-          where: { r_content: { [Op.like]: `%${value}%` } },
-          include: {
-            model: USER,
-            attributes: ["nickname"],
-          },
-        },
-        {
-          model: USER,
-          attributes: ["nickname"],
-        },
-      ],
-      order: orderOption[`${order}`],
-    },
-  };
+const pagination = {};
 
-  try {
-    let result = await POST.findAll(filterList[`${filter}`]);
-    console.log(result);
+// /posts router preprocess
+router.all("/posts/**", async (req, res, next) => {
+  const { pageNum, listLimit, pageNavCount } = req.query;
 
-    let message =
-      result.length > 0
-        ? `총 ${result.length} 개의 게시글이 있습니다. (키워드: ${value})`
-        : `검색 결과가 없습니다. (키워드: ${value})`;
+  pagination.listLimit = Number(listLimit) || 10;
+  pagination.pageNavCount = Number(pageNavCount) || 10;
 
-    return res.status(200).send({
-      data: result,
-      MESSAGE: message,
-    });
-  } catch (err) {
-    console.error(err);
-    return res.send({ ERROR: "검색 중 오류가 발생했습니다." });
-  }
-});
+  pagination.pageNum = Number(pageNum) || 1;
+  pagination.offset = (pagination.pageNum - 1) * pagination.listLimit;
 
-// write 페이지에서 게시판 검색
-router.get("/board/:value?/get", async (req, res) => {
-  const value = req?.params?.value;
-  try {
-    // cf) value 가 없을 경우 where 절을 {} 로 설정하여 전체 목록 표시
-    const result = await BOARD.findAll({
-      where: value
-        ? {
-            b_kor: { [Op.like]: `%${value}%` },
-          }
-        : {},
-      raw: true,
-    });
-    return res.status(200).send(result);
-  } catch (err) {
-    console.error(err);
-  }
+  pagination.startNavNum =
+    pagination.pageNum - Math.floor(pagination.pageNavCount / 2);
+  pagination.startNavNum =
+    pagination.startNavNum < 1 ? 1 : pagination.startNavNum;
+  next();
 });
 
 // community 게시판의 게시글 표시 및 정렬
-router.get("/posts/:bEng/:order/get", async (req, res) => {
-  const bEng = req.params.bEng;
-  const order = req.params.order;
+router.get("/posts/get", async (req, res) => {
+  const bEng = req.query.bEng;
+  const order = req.query.order;
 
   try {
     const board = await BOARD.findOne({
       where: { b_eng: bEng },
     });
-    const data = await POST.findAll({
+    const condition = {
       attributes: [
         "p_code",
         "p_title",
@@ -267,10 +171,169 @@ router.get("/posts/:bEng/:order/get", async (req, res) => {
         },
       ],
       order: orderOption[`${order}`],
+    };
+
+    const data = await POST.findAll({
+      attributes: condition.attributes,
+      where: condition.where,
+      include: condition.include,
+      order: condition.order,
+      limit: pagination.listLimit,
+      offset: pagination.offset,
     });
-    return res.status(200).send({ board, data });
+    const count = await POST.count({
+      attributes: condition.attributes,
+      where: condition.where,
+      include: condition.include,
+      order: condition.order,
+    });
+
+    pagination.listTotalCount = count || 0;
+    pagination.pageTotalCount = Math.ceil(
+      pagination.listTotalCount / pagination.listLimit
+    );
+
+    return res.status(200).send({ pagination, board, data });
   } catch (err) {
     console.error(err);
+  }
+});
+
+//  community 게시판의 게시글 검색 및 정렬
+router.get("/posts/search", async (req, res) => {
+  const bCode = req.query.bCode;
+  const value = req.query.keyword;
+  const filter = req.query.filter;
+  const order = req.query.order;
+  /**
+   * [^><]: 괄호 안 문자 부등호 >< 는 모두 제외
+   * [^><]*[^><]*: 부등호를 제외한 모든 문자(0~n개) 일치
+   * (?=<): 정규식 그룹 패턴. 이전 결과에서 < 직전에 오는 문자열만 일치(재필터링)
+   */
+  const filterList = {
+    title_content: {
+      where: {
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { p_title: { [Op.like]: `%${value}%` } },
+              {
+                p_content: {
+                  [Op.regexp]: `[^><]*${value}[^><]*(?=<)`,
+                },
+              },
+            ],
+          },
+          { b_code: bCode },
+          { p_deleted: null },
+        ],
+      },
+      include: {
+        model: USER,
+        attributes: ["nickname"],
+      },
+    },
+
+    title: {
+      where: {
+        [Op.and]: [
+          { p_title: { [Op.like]: `%${value}%` } },
+          { b_code: bCode },
+          { p_deleted: null },
+        ],
+      },
+      include: {
+        model: USER,
+        attributes: ["nickname"],
+      },
+    },
+
+    content: {
+      where: {
+        [Op.and]: [
+          {
+            p_content: {
+              [Op.regexp]: `[^><]*${value}[^><]*(?=<)`,
+            },
+          },
+          { b_code: bCode },
+          { p_deleted: null },
+        ],
+      },
+      include: {
+        model: USER,
+        attributes: ["nickname"],
+      },
+    },
+
+    nickname: {
+      where: { [Op.and]: [{ b_code: bCode }, { p_deleted: null }] },
+      include: {
+        model: USER,
+        attributes: ["nickname"],
+        where: { nickname: { [Op.like]: `%${value}%` } },
+      },
+    },
+
+    reply: {
+      where: { [Op.and]: [{ b_code: bCode }, { p_deleted: null }] },
+      include: [
+        {
+          model: REPLY,
+          attributes: ["r_code", "r_content"],
+          where: {
+            [Op.and]: [
+              { r_content: { [Op.like]: `%${value}%` } },
+              { r_deleted: null },
+            ],
+          },
+          // reply
+          include: {
+            model: USER,
+            attributes: ["nickname"],
+          },
+        },
+        // post
+        {
+          model: USER,
+          attributes: ["nickname"],
+        },
+      ],
+    },
+  };
+  try {
+    const data = await POST.findAll({
+      where: filterList[`${filter}`].where,
+      include: filterList[`${filter}`].include,
+      order: orderOption[`${order}`],
+      limit: pagination.listLimit,
+      offset: pagination.offset,
+    });
+    const count = await POST.count({
+      raw: true,
+      where: filterList[`${filter}`].where,
+      include: filterList[`${filter}`].include,
+      order: orderOption[`${order}`],
+    });
+    let MESSAGE = !value
+      ? ""
+      : count > 0
+      ? `총 ${count} 개의 게시글이 있습니다. (키워드: ${value})`
+      : `검색 결과가 없습니다. (키워드: ${value})`;
+
+    pagination.listTotalCount = count || 0;
+    pagination.pageTotalCount = Math.ceil(
+      pagination.listTotalCount / pagination.listLimit
+    );
+
+    return res.status(200).send({
+      pagination,
+      data,
+      MESSAGE,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.send({ ERROR: "검색 중 오류가 발생했습니다." });
   }
 });
 
@@ -301,6 +364,25 @@ router.get("/post/:pCode/get", async (req, res) => {
   }
 });
 
+// write 페이지에서 게시판 검색
+router.get("/board/:value?/get", async (req, res) => {
+  const value = req?.params?.value;
+  try {
+    // cf) value 가 없을 경우 where 절을 {} 로 설정하여 전체 목록 표시
+    const result = await BOARD.findAll({
+      where: value
+        ? {
+            b_kor: { [Op.like]: `%${value}%` },
+          }
+        : {},
+      raw: true,
+    });
+    return res.status(200).send(result);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 // editor 에 이미지 업로드
 // fileUp.single("...") : formData 객체에 file 을 append 했던 key 값으로 지정
 // (key=value 로 저장되므로 input tag 의 name 과 동일한 역할)
@@ -320,8 +402,8 @@ router.post("/upload", fileUp.single("upload"), async (req, res, next) => {
       a_save_name: file.filename,
       a_ext: file.mimetype,
     };
-    const asdf = await ATTACH.create(uploadFileInfo);
-    console.log(asdf);
+    const uploaded = await ATTACH.create(uploadFileInfo);
+    console.log(uploaded);
     return res.json({
       uploaded: true,
       url: uploadFileInfo.a_save_name,

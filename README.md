@@ -43,8 +43,8 @@ npm run linux
 
 ## 실행 화면(커뮤니티)
 
-![post](https://file.notion.so/f/s/fcdc4b02-141d-467d-97d5-2888d9416d52/post.gif?id=3b5ccb69-2180-4886-8ed0-6ba478d668c3&table=block&spaceId=f0e0ab15-e9ec-46c4-97fe-8808a1f369e6&expirationTimestamp=1692979200000&signature=VY9S79feOE92rvJt7av-FzprnEsg1n92uKuVw76v2_M&downloadName=post.gif)
-![order-filter](https://file.notion.so/f/s/94214c24-b59f-4103-ac6e-9d4838197af4/order-filter.gif?id=d66e6d77-02f4-4838-a563-e59f02fce756&table=block&spaceId=f0e0ab15-e9ec-46c4-97fe-8808a1f369e6&expirationTimestamp=1692979200000&signature=W2YFYhZ6Xmq7q5kborHEs_Jd_4jcBMTuI5ZA8JVmJi0&downloadName=order-filter.gif)
+![post](https://github.com/PollyGotACracker/team-project-howdo/assets/92136750/bf0f57b5-f3d5-4b98-8523-ae4576f13f3e)
+![order-filter](https://github.com/PollyGotACracker/team-project-howdo/assets/92136750/7710595b-6a8f-4fcf-a1d2-7fb4fafa2ca8)
 
 ## Design
 
